@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "eracle",
+  "dependencies": {
+    "bootstrap-stylus": "~5.0.2",
+    "Font-Awesome-Stylus": "font-awesome-stylus#~4.4.0"
+  }
+}
