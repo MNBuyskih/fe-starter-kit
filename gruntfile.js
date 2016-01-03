@@ -88,7 +88,7 @@ module.exports = function (grunt) {
                 src: ['**/*.jade', '!**/_*.jade'],
                 ext: ".html",
                 extDot: "last",
-                options: {pretty: compress},
+                options: {pretty: !compress},
                 dest
             }
         },
