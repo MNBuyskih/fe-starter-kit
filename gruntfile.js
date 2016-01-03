@@ -78,6 +78,12 @@ module.exports = function (grunt) {
                 expand: true,
                 src: ['**/*.html', '**/*.css', '!**/_*.html', '!**/_*.css'],
                 dest
+            },
+            fa: {
+                cwd: 'bower_components/Font-Awesome-Stylus/fonts',
+                expand: true,
+                src: ['**/*'],
+                dest: `${dest}/css/fonts`
             }
         },
 
@@ -126,7 +132,7 @@ module.exports = function (grunt) {
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('dev', ['stylus', 'jade', 'imagemin', 'concat']);
+    grunt.registerTask('dev', ['stylus', 'jade', 'imagemin', 'concat', 'copy']);
     grunt.registerTask('build', ['dev', 'postcss']);
     grunt.registerTask('default', ['dev', 'browserSync', 'watch']);
 };
