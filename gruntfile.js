@@ -38,8 +38,13 @@ module.exports = function (grunt) {
                 options: {spawn: false},
             },
             images: {
-                files: ['src/**/*.{png,jpg,gif}'],
+                files: ['<%= imagemin.static.src %>'],
                 tasks: ['imagemin'],
+                options: {spawn: false},
+            },
+            icons: {
+                files: ['<%= sprite.icons.src %>'],
+                tasks: ['sprite', 'icons', 'stylus', 'concat:css'],
                 options: {spawn: false},
             }
         },
@@ -118,21 +123,54 @@ module.exports = function (grunt) {
         },
 
         imagemin: {
+            options: {
+                use: [require('imagemin-mozjpeg')()],
+            },
             static: {
-                options: {
-                    use: [require('imagemin-mozjpeg')()],
-                },
                 expand: true,
                 cwd: 'src',
-                src: ['**/*.{png,jpg,gif}', '**/*.{png,jpg,gif}'],
+                src: ['**/*.{png,jpg,gif}', '!**/icons/*.{png,jpg,gif}'],
                 dest,
             },
-        }
+            icons: {
+                files: {
+                    '<%= sprite.icons.dest %>': '<%= sprite.icons.dest %>'
+                }
+            }
+        },
+
+        sprite: {
+            icons: {
+                src: 'src/css/images/icons/*',
+                dest: `${dest}/css/images/icons.png`,
+                destCss: 'src/css/sprites.styl',
+                imgPath: 'images/icons.png',
+                algorithm: 'top-down',
+                padding: 10,
+            },
+        },
     });
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('dev', ['stylus', 'jade', 'imagemin', 'concat', 'copy']);
+    grunt.registerTask('icons', 'Генерировать все доступные иконки автоматически', function () {
+        let srcDir = grunt.template.process('<%= sprite.icons.src %>'),
+            srcIcons = `${srcDir}`,
+            iconPaths = grunt.file.expand({}, srcIcons),
+            icons = iconPaths.reduce((icons, iconPath) => {
+                let icon = path.basename(iconPath, path.extname(iconPath));
+                icons.push(`$${icon}`);
+                return icons;
+            }, []),
+            text = "\n\n\n// Автоматически генерируем все доступные иконки\nsprites(" + icons.join(' ') + ")",
+            cssFile = grunt.template.process('<%= sprite.icons.destCss %>'),
+            content = grunt.file.read(cssFile).toString() + text;
+
+        if (!icons.length) content = "// Добавте иконки в папку src/css/images/icons или удалите этот файл и закоментируйте его подключение в style.styl";
+        grunt.file.write(cssFile, content);
+    });
+
+    grunt.registerTask('dev', ['sprite', 'icons', 'stylus', 'jade', 'imagemin', 'concat', 'copy']);
     grunt.registerTask('build', ['dev', 'postcss']);
     grunt.registerTask('default', ['dev', 'browserSync', 'watch']);
 };

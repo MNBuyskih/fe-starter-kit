@@ -11,6 +11,7 @@
     "grunt-contrib-stylus": "^0.22.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-postcss": "^0.7.1",
+    "grunt-spritesmith": "^6.1.0",
     "imagemin-mozjpeg": "^5.1.0",
     "load-grunt-tasks": "^3.4.0"
   }
