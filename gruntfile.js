@@ -159,14 +159,17 @@ module.exports = function (grunt) {
             iconPaths = grunt.file.expand({}, srcIcons),
             icons = iconPaths.reduce((icons, iconPath) => {
                 let icon = path.basename(iconPath, path.extname(iconPath));
-                icons.push(`$${icon}`);
+                icons.push(`.icon-${icon}
+  sprite($${icon})`);
                 return icons;
             }, []),
-            text = "\n\n\n// Автоматически генерируем все доступные иконки\nsprites(" + icons.join(' ') + ")",
+            text = `
+// Автоматически генерируем все доступные иконки
+${icons.join("\n")}
+`,
             cssFile = grunt.template.process('<%= sprite.icons.destCss %>'),
             content = grunt.file.read(cssFile).toString() + text;
 
-        if (!icons.length) content = "// Добавте иконки в папку src/css/images/icons или удалите этот файл и закоментируйте его подключение в style.styl";
         grunt.file.write(cssFile, content);
     });
 
